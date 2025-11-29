@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perfume Store</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f7f4ef;
+        margin: 0;
+        padding: 20px;
+    }
+
+    h1 { text-align: center; margin-bottom: 30px; }
+
+    .container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .card {
+        background: white;
+        width: 250px;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .card:hover { transform: scale(1.04); }
+
+    .card img {
+        width: 100%;
+        border-radius: 10px;
+    }
+
+    .details {
+        display: none;
+        background: #ffffff;
+        padding: 20px;
+        margin: 30px auto;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        max-width: 400px;
+    }
+
+    .buy-btn {
+        background: #000;
+        color: white;
+        padding: 10px;
+        border: none;
+        width: 100%;
+        border-radius: 5px;
+        margin-top: 10px;
+        cursor: pointer;
+    }
+
+    .form-section {
+        margin-top: 15px;
+        display: none;
+    }
+
+    input, select, textarea {
+        width: 100%;
+        padding: 8px;
+        margin-top: 6px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .receipt {
+        display: none;
+        background: #fff;
+        padding: 20px;
+        margin-top: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+</style>
+</head>
+<body>
+
+<h1>Spray 'n Slay (Perfume Shop)</h1>
+
+<div class="container">
+
+    <div class="card" onclick="showDetails('ultra')">
+        <img src="https://uploads.onecompiler.io/445vtcqzy/445vtcwv7/1000066410.webp">
+        <h3>Le Male Ultra Male</h3>
+        <p><b>₱2,800</b></p>
+    </div>
+
+    <div class="card" onclick="showDetails('stronger')">
+        <img src="https://uploads.onecompiler.io/445vtcqzy/445vtcwv7/1000064783.jpg">
+        <h3>Stronger With You</h3>
+        <p><b>₱3,200</b></p>
+    </div>
+
+    <div class="card" onclick="showDetails('valentino')">
+        <img src="https://uploads.onecompiler.io/445vtcqzy/445vtcwv7/1000066411.jpg">
+        <h3>Valentino Uomo Born in Roma</h3>
+        <p><b>₱3,000</b></p>
+    </div>
+
+</div>
+
+<!-- PRODUCT DETAILS -->
+<div id="details-box" class="details">
+    <h2 id="p-name"></h2>
+    <p id="p-notes"></p>
+    <p id="p-desc"></p>
+    <p><b id="p-price"></b></p>
+
+    <button class="buy-btn" onclick="showForm()">Buy Now</button>
+
+    <div class="form-section" id="form">
+        <label>Payment Method:</label>
+        <select id="payment" onchange="paymentSelect()">
+            <option value="">Select...</option>
+            <option value="gcash">GCash</option>
+            <option value="cod">Cash on Delivery</option>
+        </select>
+
+        <div id="gcash-form" style="display:none;">
+            <label>GCash Number:</label>
+            <input type="text" id="gcash-num" placeholder="Enter GCash number">
+        </div>
+
+        <div id="cod-form" style="display:none;">
+            <label>Full Address:</label>
+            <textarea id="cod-address" placeholder="Enter address"></textarea>
+            <label>Phone Number:</label>
+            <input type="text" id="cod-phone" placeholder="Enter phone number">
+        </div>
+
+        <button class="buy-btn" style="background:#28a745;" onclick="generateReceipt()">Confirm Order</button>
+    </div>
+</div>
+
+<!-- RECEIPT -->
+<div id="receipt" class="receipt">
+    <h2>Receipt</h2>
+    <p><b>Perfume:</b> <span id="r-name"></span></p>
+    <p><b>Price:</b> <span id="r-price"></span></p>
+    <p><b>Payment Method:</b> <span id="r-method"></span></p>
+    <p id="r-extra"></p>
+    <hr>
+    <p style="text-align:center;">Thank you for your purchase!</p>
+</div>
+
+<script>
+const perfumes = {
+    ultra: {
+        name: "Le Male Ultra Male",
+        notes: "Notes: Pear, Vanilla, Cinnamon, Amber, Lavender",
+        desc: "A sweet and masculine scent. Best for night use and strong projection.",
+        price: 2800
+    },
+    stronger: {
+        name: "Stronger With You",
+        notes: "Notes: Vanilla, Chestnut, Cardamom, Pink Pepper",
+        desc: "Warm, elegant, romantic scent. Long lasting and seductive.",
+        price: 3200
+    },
+    valentino: {
+        name: "Valentino Uomo Born in Roma",
+        notes: "Notes: Violet Leaf, Ginger, Vetiver, Mineral Notes",
+        desc: "Fresh yet strong masculine scent. Versatile for day and night.",
+        price: 3000
+    }
+};
+
+let selectedPerfume = {};
+
+function showDetails(type) {
+    const p = perfumes[type];
+    selectedPerfume = p;
+
+    document.getElementById("p-name").innerText = p.name;
+    document.getElementById("p-notes").innerText = p.notes;
+    document.getElementById("p-desc").innerText = p.desc;
+    document.getElementById("p-price").innerText = "Price: ₱" + p.price;
+
+    document.getElementById("details-box").style.display = "block";
+    document.getElementById("form").style.display = "none";
+    document.getElementById("receipt").style.display = "none";
+}
+
+function showForm() {
+    document.getElementById("form").style.display = "block";
+}
+
+function paymentSelect() {
+    let pay = document.getElementById("payment").value;
+
+    document.getElementById("gcash-form").style.display = pay === "gcash" ? "block" : "none";
+    document.getElementById("cod-form").style.display = pay === "cod" ? "block" : "none";
+}
+
+function generateReceipt() {
+    let method = document.getElementById("payment").value;
+    if (method === "") {
+        alert("Please select a payment method.");
+        return;
+    }
+
+    document.getElementById("r-name").innerText = selectedPerfume.name;
+    document.getElementById("r-price").innerText = "₱" + selectedPerfume.price;
+    document.getElementById("r-method").innerText = method === "gcash" ? "GCash" : "Cash on Delivery";
+
+    if (method === "gcash") {
+        let num = document.getElementById("gcash-num").value;
+        document.getElementById("r-extra").innerHTML = "<b>GCash Number:</b> " + num;
+    } else {
+        let address = document.getElementById("cod-address").value;
+        let phone = document.getElementById("cod-phone").value;
+        document.getElementById("r-extra").innerHTML = "<b>Address:</b> " + address + "<br><b>Phone:</b> " + phone;
+    }
+
+    document.getElementById("receipt").style.display = "block";
+}
+</script>
+
+</body>
+</html>
